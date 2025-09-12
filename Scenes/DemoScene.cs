@@ -58,8 +58,8 @@ public class DemoScene : IScene
 
         // Load pixel grid
         grid = new PixelGrid(screenWidth, screenHeight);
-        gridWidth = grid.GetWidth();
-        gridHeight = grid.GetHeight();
+        gridWidth = grid.gridWidth;
+        gridHeight = grid.gridHeight;
     }
 
     public void Start()
