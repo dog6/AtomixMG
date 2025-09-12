@@ -40,6 +40,8 @@ artifacts/
 # MonoGame / Content Pipeline
 Content/bin/
 Content/obj/
+bin/
+obj/
 *.mgcb.tmp
 *.xnb
 
