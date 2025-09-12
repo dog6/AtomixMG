@@ -1,14 +1,14 @@
 # Build results
-bin/
-obj/
-[Bb]uild/
-[Ll]og/
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
+/bin/
+/obj/
+/[Bb]uild/
+/[Ll]og/
+/[Dd]ebug/
+/[Rr]elease/
+/x64/
+/x86/
+/[Aa][Rr][Mm]/
+/[Aa][Rr][Mm]64/
 
 # Visual Studio cache/options
 .vs/
@@ -43,10 +43,7 @@ Content/obj/
 *.mgcb.tmp
 *.xnb
 
-# Other
-*.exe
-*.dll
-*.pdb
+# Temporary / backup files
 *.cache
 *.db
 *.opendb
