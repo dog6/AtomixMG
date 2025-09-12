@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AtomixMG")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+91015eb8af901d8f8d72ffef125e88908fcb81e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("AtomixMG")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AtomixMG")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
