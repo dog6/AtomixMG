@@ -1,5 +1,4 @@
 
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 
 public interface IScene
