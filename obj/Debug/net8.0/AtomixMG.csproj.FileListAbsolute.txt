@@ -29,3 +29,4 @@ g:\Projects\AtomixMG\obj\Debug\net8.0\refint\AtomixMG.dll
 g:\Projects\AtomixMG\obj\Debug\net8.0\AtomixMG.pdb
 g:\Projects\AtomixMG\obj\Debug\net8.0\AtomixMG.genruntimeconfig.cache
 g:\Projects\AtomixMG\obj\Debug\net8.0\ref\AtomixMG.dll
+g:\Projects\AtomixMG\obj\Debug\net8.0\AtomixMG.sourcelink.json
