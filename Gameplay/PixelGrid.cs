@@ -1,8 +1,9 @@
 using System;
 using System.Diagnostics;
 using AtomixMG.Game;
+using Microsoft.Xna.Framework.Graphics;
 
-class PixelGrid : Game1
+class PixelGrid
 {
     public bool[,] hasPixel { get; private set; }
 
@@ -15,9 +16,9 @@ class PixelGrid : Game1
         this.hasPixel = new bool[width, height];
     }
 
-    public void CreatePixel(int x, int y)
+    public void CreatePixel(int x, int y, GraphicsDevice graphicsDevice)
     {
-        if (!MouseHelper.IsInsideViewport(GraphicsDevice)) return;
+        if (!MouseHelper.IsInsideViewport(graphicsDevice)) return;
         if (hasPixel[x, y]) return;
 
         // populate empty cell

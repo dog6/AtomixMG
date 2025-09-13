@@ -15,7 +15,7 @@ public enum MouseButton
     XButton2
 }
 
-public static class MouseHelper
+public static class MouseHelper 
 {
 
 

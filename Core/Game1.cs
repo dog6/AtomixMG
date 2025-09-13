@@ -13,7 +13,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
     private const float fixedTimeStep = 1f / 16f;
     private float timeStepAccum = 0f;
 
-    DemoScene demoScene = new DemoScene();
+    // DemoScene demoScene = new DemoScene();
 
     public Game1()
     {
@@ -24,17 +24,35 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
     protected override void Initialize()
     {
+        SceneManager.Initialize(GraphicsDevice);
+        SceneManager.AddScene(new DemoScene());
+        SceneManager.SetSceneById(0);
+
         // TODO: Add your initialization logic here
-        demoScene.Start();
+        // demoScene.Initialize(GraphicsDevice);
+
 
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
+        _spriteBatch = new SpriteBatch(GraphicsDevice); // load spritebatch
+        SceneManager.LoadCurrentScene();
+        // SceneManager.LoadSceneById(0); // load demo scene with id 0
 
-        demoScene.Load(GraphicsDevice);
+    }
+
+    private void FixedStep(GameTime gameTime)
+    {
+        // Calculate fixed update
+        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        timeStepAccum += dt;
+        while (timeStepAccum >= fixedTimeStep)
+        {
+            SceneManager.FixedUpdateCurrentScene(fixedTimeStep);
+            timeStepAccum -= fixedTimeStep;
+        }
     }
 
     protected override void Update(GameTime gameTime)
@@ -45,16 +63,9 @@ public class Game1 : Microsoft.Xna.Framework.Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        demoScene.Update();
+        SceneManager.UpdateCurrentScene();
 
-        // Calculate fixed update
-        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        timeStepAccum += dt;
-        while (timeStepAccum >= fixedTimeStep)
-        {
-        demoScene.FixedUpdate(fixedTimeStep);
-        timeStepAccum -= fixedTimeStep;
-        }
+        FixedStep(gameTime);
 
         // TODO: Add your update logic here
         base.Update(gameTime);
@@ -67,7 +78,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
         // TODO: Add your drawing code here
         _spriteBatch.Begin();
 
-        demoScene.Render(_spriteBatch);
+        SceneManager.RenderCurrentScene(_spriteBatch);
 
         _spriteBatch.End();
 
