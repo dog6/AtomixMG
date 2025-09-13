@@ -77,13 +77,13 @@ public class DemoScene : IScene
         if (KeyboardHelper.JustPressed(Keys.Space)) gamePaused = !gamePaused;
 
         // Mouse actions
-        var mousePos = MouseHelper.ScreenPos();
+        var mousePos = MouseHelper.ScreenPosition();
 
         // Listen for populating cells
         if (MouseHelper.IsPressed(MouseButton.Left))
         {
-            int x = mousePos.Item1;
-            int y = mousePos.Item2;
+            int x = mousePos.x;
+            int y = mousePos.y;
 
             if (x < gridWidth && y < gridHeight && x > 0 && y > 0)
             {
@@ -95,7 +95,7 @@ public class DemoScene : IScene
         // Listen for clearing cells
         if (MouseHelper.IsPressed(MouseButton.Right))
         {
-            grid.ClearPixel(mousePos.Item1, mousePos.Item2);
+            grid.ClearPixel(mousePos.x, mousePos.y);
         }
 
         gridTexture.SetData(pixelData); // update grid texture w/ pixel data

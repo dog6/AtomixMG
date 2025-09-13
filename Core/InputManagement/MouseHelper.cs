@@ -15,10 +15,10 @@ public enum MouseButton
     XButton2
 }
 
-public static class MouseHelper 
+public static class MouseHelper
 {
 
-
+    private static MouseState mouseState;
 
     /// <summary>
     /// Returns true if the mouse cursor is within the active window's viewport.
@@ -27,10 +27,10 @@ public static class MouseHelper
     {
         var mousePos = Mouse.GetState().Position;
         var vp = graphicsDevice.Viewport;
-    
-        return mousePos.X >= vp.X && 
-            mousePos.X < vp.X + vp.Width && 
-            mousePos.Y >= vp.Y && 
+
+        return mousePos.X >= vp.X &&
+            mousePos.X < vp.X + vp.Width &&
+            mousePos.Y >= vp.Y &&
             mousePos.Y < vp.Y + vp.Height;
     }
 
@@ -52,11 +52,7 @@ public static class MouseHelper
         return GetButtonState(state, button) == ButtonState.Released;
     }
 
-    public static (int, int) ScreenPos()
-    {
-        var state = Mouse.GetState();
-        return (state.X, state.Y);
-    }
+    public static Vec2i ScreenPosition() => new Vec2i(mouseState.X, mouseState.Y);
 
     /// <summary>
     /// Internal helper that maps a MouseButton to the corresponding ButtonState.
@@ -70,4 +66,10 @@ public static class MouseHelper
         MouseButton.XButton2 => state.XButton2,
         _ => ButtonState.Released // safe fallback
     };
+
+    private static void Update()
+    {
+        mouseState = Mouse.GetState();
+    }
+
 }
