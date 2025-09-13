@@ -13,8 +13,6 @@ public class Game1 : Microsoft.Xna.Framework.Game
     private const float fixedTimeStep = 1f / 16f;
     private float timeStepAccum = 0f;
 
-    // DemoScene demoScene = new DemoScene();
-
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -25,12 +23,8 @@ public class Game1 : Microsoft.Xna.Framework.Game
     protected override void Initialize()
     {
         SceneManager.Initialize(GraphicsDevice);
-        SceneManager.AddScene(new DemoScene());
+        SceneManager.AddScene(new DemoScene(), new Physics2DScene());
         SceneManager.SetSceneById(0);
-
-        // TODO: Add your initialization logic here
-        // demoScene.Initialize(GraphicsDevice);
-
 
         base.Initialize();
     }
@@ -39,8 +33,6 @@ public class Game1 : Microsoft.Xna.Framework.Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice); // load spritebatch
         SceneManager.LoadCurrentScene();
-        // SceneManager.LoadSceneById(0); // load demo scene with id 0
-
     }
 
     private void FixedStep(GameTime gameTime)
@@ -67,7 +59,6 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
         FixedStep(gameTime);
 
-        // TODO: Add your update logic here
         base.Update(gameTime);
     }
 
@@ -75,7 +66,6 @@ public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDevice.Clear(Color.Black);
 
-        // TODO: Add your drawing code here
         _spriteBatch.Begin();
 
         SceneManager.RenderCurrentScene(_spriteBatch);
