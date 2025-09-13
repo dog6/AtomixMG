@@ -1,17 +1,18 @@
 using System;
 using System.Diagnostics;
+using AtomixMG.Game;
 using Microsoft.Xna.Framework.Graphics;
 
 class PixelGrid
 {
     public bool[,] hasPixel { get; private set; }
 
-    private int width, height;
+    public int gridWidth, gridHeight;
 
     public PixelGrid(int width, int height)
     {
-        this.width = width;
-        this.height = height;
+        this.gridWidth = width;
+        this.gridHeight = height;
         this.hasPixel = new bool[width, height];
     }
 
@@ -28,14 +29,20 @@ class PixelGrid
 
     public void ClearPixel(int x, int y)
     {
-        if (x < GetWidth() && y < GetHeight() && x > 0 && y > 0)
-        {
+        if (x < gridWidth && y < gridHeight && x > 0 && y > 0)
             if (!hasPixel[x, y]) return; // cell already empty
-                                         // clear cell
-            hasPixel[x, y] = false;
-        }
+            hasPixel[x, y] = false; // clear cell
     }
 
+    /// <summary>
+    /// Counts neighbors in surrounding rectangle.<br/>
+    /// X and Y are center position.
+    /// </summary>
+    /// <param name="x">X position of cell</param>
+    /// <param name="y">Y position of cell</param>
+    /// <param name="maskWidth">Width of mask</param>
+    /// <param name="maskHeight">Height of mask</param>
+    /// <returns></returns>
     public int CountNeighbors(int x, int y, int maskWidth = 3, int maskHeight = 3)
     {
         int result = 0;
@@ -55,9 +62,9 @@ class PixelGrid
 
         // Clamp bounds to valid range
         int clampedStartX = Math.Max(0, startX);
-        int clampedEndX = Math.Min(hasPixel.GetLength(0) - 1, endX);
+        int clampedEndX = Math.Min(gridWidth - 1, endX);
         int clampedStartY = Math.Max(0, startY);
-        int clampedEndY = Math.Min(hasPixel.GetLength(1) - 1, endY);
+        int clampedEndY = Math.Min(gridHeight - 1, endY);
 
         // Loop with pre-clamped bounds
         for (int nx = clampedStartX; nx <= clampedEndX; nx++)
@@ -78,8 +85,5 @@ class PixelGrid
 
         return result;
     }
-
-    public int GetWidth() => width;
-    public int GetHeight() => height;
 
 }

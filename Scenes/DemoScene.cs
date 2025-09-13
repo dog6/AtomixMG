@@ -8,6 +8,7 @@ namespace AtomixMG.Game.Scene;
 public class DemoScene : IScene
 {
 
+    private const int sceneId = 0; // hardcoded value
     private Texture2D pixelTexture, gridTexture;
     private GraphicsDevice graphicsDevice;
 
@@ -42,28 +43,31 @@ public class DemoScene : IScene
 
     }
 
-    public void Load(GraphicsDevice _graphicsDevice)
+    public void Load()
     {
-        graphicsDevice = _graphicsDevice;
-
         // Load pixel texture
         pixelTexture = new Texture2D(graphicsDevice, 1, 1);
         pixelTexture.SetData(new[] { Color.White });
 
+        // Load grid texture
+        gridTexture = new Texture2D(graphicsDevice, screenWidth, screenHeight);
+    }
+
+    public void Initialize(GraphicsDevice _graphicsDevice)
+    {
+        graphicsDevice = _graphicsDevice;
+
+        // Get screen size
         screenWidth = graphicsDevice.Viewport.Width;
         screenHeight = graphicsDevice.Viewport.Height;
 
-        gridTexture = new Texture2D(graphicsDevice, screenWidth, screenHeight);
+        // Initialize pixelData array
         pixelData = new Color[screenWidth * screenHeight];
 
-        // Load pixel grid
+        // Initialize pixel grid
         grid = new PixelGrid(screenWidth, screenHeight);
-        gridWidth = grid.GetWidth();
-        gridHeight = grid.GetHeight();
-    }
-
-    public void Start()
-    {
+        gridWidth = grid.gridWidth;
+        gridHeight = grid.gridHeight;
 
     }
 
@@ -137,5 +141,9 @@ public class DemoScene : IScene
         // Draw one texture instead of thousands of pixels
         sb.Draw(gridTexture, Vector2.Zero, Color.White);
     }
+
+    public string GetName() => "DemoScene";
+
+    int IScene.GetId() => sceneId;
 
 }

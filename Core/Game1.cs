@@ -13,8 +13,6 @@ public class Game1 : Microsoft.Xna.Framework.Game
     private const float fixedTimeStep = 1f / 16f;
     private float timeStepAccum = 0f;
 
-    DemoScene demoScene = new DemoScene();
-
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -24,17 +22,29 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
-        demoScene.Start();
+        SceneManager.Initialize(GraphicsDevice);
+        SceneManager.AddScene(new DemoScene(), new Physics2DScene());
+        SceneManager.SetSceneById(0);
 
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
+        _spriteBatch = new SpriteBatch(GraphicsDevice); // load spritebatch
+        SceneManager.LoadCurrentScene();
+    }
 
-        demoScene.Load(GraphicsDevice);
+    private void FixedStep(GameTime gameTime)
+    {
+        // Calculate fixed update
+        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        timeStepAccum += dt;
+        while (timeStepAccum >= fixedTimeStep)
+        {
+            SceneManager.FixedUpdateCurrentScene(fixedTimeStep);
+            timeStepAccum -= fixedTimeStep;
+        }
     }
 
     protected override void Update(GameTime gameTime)
@@ -45,18 +55,10 @@ public class Game1 : Microsoft.Xna.Framework.Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        demoScene.Update();
+        SceneManager.UpdateCurrentScene();
 
-        // Calculate fixed update
-        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        timeStepAccum += dt;
-        while (timeStepAccum >= fixedTimeStep)
-        {
-        demoScene.FixedUpdate(fixedTimeStep);
-        timeStepAccum -= fixedTimeStep;
-        }
+        FixedStep(gameTime);
 
-        // TODO: Add your update logic here
         base.Update(gameTime);
     }
 
@@ -64,10 +66,9 @@ public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDevice.Clear(Color.Black);
 
-        // TODO: Add your drawing code here
         _spriteBatch.Begin();
 
-        demoScene.Render(_spriteBatch);
+        SceneManager.RenderCurrentScene(_spriteBatch);
 
         _spriteBatch.End();
 
