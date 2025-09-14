@@ -1,103 +1,78 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace AtomixMG.Game.Scene;
 
-public struct PhysicsPixel
-{
-    public bool isActive;
-    public Vector2 velocity;
-    public float mass;
-    public Color color;
-    public int materialType; // 0=sand, 1=water, 2=stone
-}
-
 public class Physics2DScene : IScene
 {
+    // Scene vars
     private const int sceneId = 1;
-    private Texture2D pixelTexture, gridTexture;
+    // private int screenWidth, screenHeight;
+    private Vec2i screenSize;
     private GraphicsDevice graphicsDevice;
-    private bool simulationPaused = false;
-    private Color[] pixelData;
-    private List<Particle> particles;
-    private Vec2i initParticleAcceleration = new Vec2i(0,1);
-
-    private int gridWidth, gridHeight;
-    private int screenWidth, screenHeight;
-
-    private void AddParticle(Vec2i spawnPos)
-    {
-        particles.Add(new Particle(spawnPos, 1, initParticleAcceleration));
-    }
-
-    private void RemoveParticleAtPosition(Vec2i targetPos)
-    {
-        var targetParticle = particles.Where(particle => particle.position.x == targetPos.x && particle.position.y == targetPos.y).FirstOrDefault();
-        if (targetParticle == null)
-        {
-            return;
-        }
-        particles.Remove(targetParticle);
-    }
-
-    private void SimulateParticles()
-    {
-        particles.ForEach((particle) =>
-        {
-            // Simulate particle
-
-        });
+    private ParticleSimulator partsim;
 
 
-    }
+    public bool IsSimulationPaused = false;
+    private Texture2D pixelTexture, gridTexture;
 
+
+    //--------------------- Scene
     public void Initialize(GraphicsDevice _graphicsDevice)
     {
         graphicsDevice = _graphicsDevice;
+        screenSize = new Vec2i(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height);
 
-        screenWidth = graphicsDevice.Viewport.Width;
-        screenHeight = graphicsDevice.Viewport.Height;
+        partsim = new ParticleSimulator(screenSize);
 
-        gridWidth = screenWidth;
-        gridHeight = screenHeight;
-
-        particles = new List<Particle>();
-        pixelData = new Color[screenWidth * screenHeight];
-
-        // Initialize grids
-        for (int x = 0; x < gridWidth; x++)
-        {
-            for (int y = 0; y < gridHeight; y++)
-            {
-                pixelData[y * gridWidth + x] = Color.Transparent;
-            }
-        }
     }
-    
+
     public void Load()
     {
+        // Load pixel texture
+        pixelTexture = new Texture2D(graphicsDevice, 1, 1);
+        pixelTexture.SetData(new[] { Color.White });
+
+        // Load grid texture
+        gridTexture = new Texture2D(graphicsDevice, screenSize.x, screenSize.y);
     }
-    
+
     public void Update()
     {
+
         // Toggle simulation
         if (KeyboardHelper.JustPressed(Keys.Space))
-            simulationPaused = !simulationPaused;
+        {
+            IsSimulationPaused = !IsSimulationPaused;
+            Console.WriteLine(IsSimulationPaused ? "Sim paused" : "Sim running");
+        }
 
         // Clear simulation
         if (KeyboardHelper.JustPressed(Keys.C))
         {
-            for (int x = 0; x < gridWidth; x++)
-            {
-                for (int y = 0; y < gridHeight; y++)
-                {
-                    pixelData[y * gridWidth + x] = Color.Transparent;
-                }
-            }
+            partsim.ClearAllParticles();
+            Console.WriteLine("Cleared particles from screen");
+        }
+
+        if (KeyboardHelper.JustPressed(Keys.D1))
+        {
+            partsim.ParticleSpawnType = ParticleType.Sand;
+            Console.WriteLine("Selected sand particles");
+        }
+
+        if (KeyboardHelper.JustPressed(Keys.D2))
+        {
+            partsim.ParticleSpawnType = ParticleType.Water;
+            Console.WriteLine("Selected water particles");
+        }
+
+        if (KeyboardHelper.JustPressed(Keys.D3))
+        {
+            partsim.ParticleSpawnType = ParticleType.Stone;
+            Console.WriteLine("Selected stone particle");
         }
 
         // Mouse actions
@@ -106,32 +81,23 @@ public class Physics2DScene : IScene
         // Add particles
         if (MouseHelper.IsPressed(MouseButton.Left))
         {
-            AddParticle(mousePos);
+            partsim.AddParticle(mousePos);
         }
 
         // Remove particles
         if (MouseHelper.IsPressed(MouseButton.Right))
         {
-            RemoveParticleAtPosition(mousePos);
+            partsim.RemoveParticleAtPosition(mousePos);
         }
 
-        gridTexture.SetData(pixelData);
+        // gridTexture.SetData(partsim.pixelData);
+        partsim.RefreshSimulator(gridTexture);
     }
     
     public void FixedUpdate(float deltaTime)
     {
-       
-    }
-    
-    private Color GetMaterialColor(int materialType)
-    {
-        return materialType switch
-        {
-            0 => Color.Yellow,     // Sand
-            1 => Color.Cyan,       // Water  
-            2 => Color.Gray,       // Stone
-            _ => Color.White
-        };
+        // partsim.RefreshSimulator(gridTexture); // refresh pixels in simulator
+        partsim.SimulateParticles(deltaTime); // update physics tick
     }
 
     public void Render(SpriteBatch sb)
@@ -139,7 +105,6 @@ public class Physics2DScene : IScene
         // Draw one texture instead of thousands of pixels
         sb.Draw(gridTexture, Vector2.Zero, Color.White);
     }
-    
     public string GetName() => "Physics2DScene";
     
     int IScene.GetId() => sceneId;

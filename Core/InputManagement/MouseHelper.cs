@@ -67,7 +67,7 @@ public static class MouseHelper
         _ => ButtonState.Released // safe fallback
     };
 
-    private static void Update()
+    public static void Update()
     {
         mouseState = Mouse.GetState();
     }

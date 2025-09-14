@@ -10,7 +10,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    private const float fixedTimeStep = 1f / 16f;
+    private const float fixedTimeStep = 1f / 60f;
     private float timeStepAccum = 0f;
 
     public Game1()
@@ -24,7 +24,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
     {
         SceneManager.Initialize(GraphicsDevice);
         SceneManager.AddScene(new DemoScene(), new Physics2DScene());
-        SceneManager.SetSceneById(0);
+        SceneManager.SetSceneById(1);
 
         base.Initialize();
     }
@@ -50,7 +50,7 @@ public class Game1 : Microsoft.Xna.Framework.Game
     protected override void Update(GameTime gameTime)
     {
         KeyboardHelper.Update();
-
+        MouseHelper.Update();
         // Listen for exit
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
