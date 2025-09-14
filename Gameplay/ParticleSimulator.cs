@@ -106,7 +106,7 @@ public class ParticleSimulator
                 continue;
             }
 
-            AssignPixelColor(pixelIndex, particle.ParticleType);
+            AssignPixelColor(pixelIndex, particle);
 
         }
 
@@ -116,15 +116,19 @@ public class ParticleSimulator
         }
     }
 
-    private void AssignPixelColor(int pixelIndex, ParticleType particleType)
+    private void AssignPixelColor(int pixelIndex, Particle particle)
     {
-        pixelData[pixelIndex] = particleType switch
+        pixelData[pixelIndex] = particle.ParticleType switch
         {
             ParticleType.Sand => Color.Yellow,
             ParticleType.Water => Color.Cyan,
             ParticleType.Stone => Color.Gray,
             _ => Color.White
         };
+
+        /*if (particle.IsStable) {
+            pixelData[pixelIndex] = Color.LimeGreen; // show stable particles as green
+        }*/
     }
 
 }

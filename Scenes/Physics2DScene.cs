@@ -19,6 +19,7 @@ public class Physics2DScene : IScene
     public bool IsSimulationPaused = false;
     private Texture2D pixelTexture, gridTexture;
 
+    // private RenderTarget2D particleDataTex;
 
     //--------------------- Scene
     public void Initialize(GraphicsDevice _graphicsDevice)
@@ -26,7 +27,9 @@ public class Physics2DScene : IScene
         graphicsDevice = _graphicsDevice;
         screenSize = new Vec2i(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height);
 
+        // particleDataTex
         partsim = new ParticleSimulator(screenSize);
+
 
     }
 

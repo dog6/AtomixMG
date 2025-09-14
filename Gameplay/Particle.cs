@@ -38,6 +38,8 @@ public class Particle : IPhysicsBody
     public void Simulate(List<Particle> particles)
     {
         if (IsStable) return;
+        if (this.Position.y == space.size.y-1) IsStable = true;
+
         switch (ParticleType)
         {
             case ParticleType.Sand:
