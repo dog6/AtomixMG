@@ -22,37 +22,27 @@ public class Physics2DScene : IScene
     private SpriteFont font;
     // private RenderTarget2D particleDataTex;
 
-    private void ListenForInputs()
-    {
-        
+    private void ListenForMouse(){
+        // Mouse actions
+        var mousePos = MouseHelper.MousePosition;
+
+        // Add particles
+        if (MouseHelper.IsPressed(MouseButton.Left))
+        {
+            if (!MouseHelper.MousePosition.Equals(MouseHelper.LastMousePosition))
+                partsim.DrawParticleLine(MouseHelper.LastMousePosition, MouseHelper.MousePosition);
+            else
+                partsim.AddParticle(mousePos);
+        }
+
+        // Remove particles
+        if (MouseHelper.IsPressed(MouseButton.Right))
+        {
+            partsim.RemoveParticleAtPosition(mousePos);
+        }
     }
-
-
-    //--------------------- Scene
-    public void Initialize(GraphicsDevice _graphicsDevice)
-    {
-        graphicsDevice = _graphicsDevice;
-        screenSize = new Vec2i(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height);
-
-        // particleDataTex
-        partsim = new ParticleSimulator(screenSize);
-    }
-
-    public void Load(ContentManager content)
-    {
-        // Load pixel texture
-        pixelTexture = new Texture2D(graphicsDevice, 1, 1);
-        pixelTexture.SetData(new[] { Color.White });
-
-        // Load grid texture
-        gridTexture = new Texture2D(graphicsDevice, screenSize.x, screenSize.y);
-        font = content.Load<SpriteFont>("Fonts/Arial");
-        
-    }
-
-    public void Update()
-    {
-
+    
+    private void ListenForKeys(){
         // Toggle simulation
         if (KeyboardHelper.JustPressed(Keys.Space))
         {
@@ -94,24 +84,43 @@ public class Physics2DScene : IScene
             partsim.ParticleSpawnType = ParticleType.Stone;
             Console.WriteLine("Selected stone particle");
         }
+    }
 
-        // Mouse actions
-        var mousePos = MouseHelper.MousePosition;
+    private void ListenForInputs()
+    {
+        ListenForKeys();
+        ListenForMouse();
+    }
 
-        // Add particles
-        if (MouseHelper.IsPressed(MouseButton.Left))
-        {
-            if (!MouseHelper.MousePosition.Equals(MouseHelper.LastMousePosition))
-                partsim.DrawParticleLine(MouseHelper.LastMousePosition, MouseHelper.MousePosition);
-            else
-                partsim.AddParticle(mousePos);
-        }
 
-        // Remove particles
-        if (MouseHelper.IsPressed(MouseButton.Right))
-        {
-            partsim.RemoveParticleAtPosition(mousePos);
-        }
+    //--------------------- Scene
+    public void Initialize(GraphicsDevice _graphicsDevice)
+    {
+        graphicsDevice = _graphicsDevice;
+        screenSize = new Vec2i(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height);
+
+        // particleDataTex
+        partsim = new ParticleSimulator(screenSize);
+    }
+
+    public void Load(ContentManager content)
+    {
+        // Load pixel texture
+        pixelTexture = new Texture2D(graphicsDevice, 1, 1);
+        pixelTexture.SetData(new[] { Color.White });
+
+        // Load grid texture
+        gridTexture = new Texture2D(graphicsDevice, screenSize.x, screenSize.y);
+        font = content.Load<SpriteFont>("Fonts/Arial");
+        
+    }
+
+    public void Update()
+    {
+
+        
+
+     
 
     }
 
