@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using AtomixMG.Game.Scene;
+using System.Diagnostics;
 
 namespace AtomixMG.Game;
 
@@ -12,6 +13,12 @@ public class Game1 : Microsoft.Xna.Framework.Game
     private SpriteBatch _spriteBatch;
     private const float fixedTimeStep = 1f / 60f;
     private float timeStepAccum = 0f;
+    SpriteFont defaultFont;
+
+    // Debug
+    private Stopwatch renderWatch = new Stopwatch();
+    private Stopwatch simWatch = new Stopwatch();
+
 
     public Game1()
     {
@@ -32,7 +39,8 @@ public class Game1 : Microsoft.Xna.Framework.Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice); // load spritebatch
-        SceneManager.LoadCurrentScene();
+        SceneManager.LoadCurrentScene(Content);
+        defaultFont = Content.Load<SpriteFont>("Fonts/Arial");
     }
 
     private void FixedStep(GameTime gameTime)
@@ -49,29 +57,34 @@ public class Game1 : Microsoft.Xna.Framework.Game
 
     protected override void Update(GameTime gameTime)
     {
-        KeyboardHelper.Update();
-        MouseHelper.Update();
+        InputManager.Update();
         // Listen for exit
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        simWatch.Start();
         SceneManager.UpdateCurrentScene();
 
         FixedStep(gameTime);
+        simWatch.Restart();
 
+        MouseHelper.LastMousePosition = MouseHelper.MousePosition;
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.Black);
-
+        renderWatch.Start();
+        GraphicsDevice.Clear(Color.Black); // clear screen
+        
         _spriteBatch.Begin();
 
         SceneManager.RenderCurrentScene(_spriteBatch);
+        _spriteBatch.DrawString(defaultFont, $"FPS: {1.0 / gameTime.ElapsedGameTime.TotalSeconds} | Draw: {renderWatch.Elapsed.Milliseconds}ms | Sim: {simWatch.Elapsed.Milliseconds}ms", new Vector2(10, 10), Color.White);
 
         _spriteBatch.End();
 
         base.Draw(gameTime);
+        renderWatch.Restart();
     }
 }

@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -15,11 +16,17 @@ public class Physics2DScene : IScene
     private GraphicsDevice graphicsDevice;
     private ParticleSimulator partsim;
 
-
+    private int ActiveParticleCount = 0;
     public bool IsSimulationPaused = false;
     private Texture2D pixelTexture, gridTexture;
-
+    private SpriteFont font;
     // private RenderTarget2D particleDataTex;
+
+    private void ListenForInputs()
+    {
+        
+    }
+
 
     //--------------------- Scene
     public void Initialize(GraphicsDevice _graphicsDevice)
@@ -29,11 +36,9 @@ public class Physics2DScene : IScene
 
         // particleDataTex
         partsim = new ParticleSimulator(screenSize);
-
-
     }
 
-    public void Load()
+    public void Load(ContentManager content)
     {
         // Load pixel texture
         pixelTexture = new Texture2D(graphicsDevice, 1, 1);
@@ -41,6 +46,8 @@ public class Physics2DScene : IScene
 
         // Load grid texture
         gridTexture = new Texture2D(graphicsDevice, screenSize.x, screenSize.y);
+        font = content.Load<SpriteFont>("Fonts/Arial");
+        
     }
 
     public void Update()
@@ -53,6 +60,13 @@ public class Physics2DScene : IScene
             Console.WriteLine(IsSimulationPaused ? "Sim paused" : "Sim running");
         }
 
+        // Toggle coloring stable particles
+        if (KeyboardHelper.JustPressed(Keys.H))
+        {
+            partsim.ColorStableParticles = !partsim.ColorStableParticles;
+            Console.WriteLine(partsim.ColorStableParticles ? "Coloring stable particles" : "Using default particle colors");
+        }
+
         // Clear simulation
         if (KeyboardHelper.JustPressed(Keys.C))
         {
@@ -60,18 +74,21 @@ public class Physics2DScene : IScene
             Console.WriteLine("Cleared particles from screen");
         }
 
+        // Switching to spawning sand particles
         if (KeyboardHelper.JustPressed(Keys.D1))
         {
             partsim.ParticleSpawnType = ParticleType.Sand;
             Console.WriteLine("Selected sand particles");
         }
 
+        // Switching to spawning water particles
         if (KeyboardHelper.JustPressed(Keys.D2))
         {
             partsim.ParticleSpawnType = ParticleType.Water;
             Console.WriteLine("Selected water particles");
         }
 
+        // Switching to spawning stone particles
         if (KeyboardHelper.JustPressed(Keys.D3))
         {
             partsim.ParticleSpawnType = ParticleType.Stone;
@@ -79,12 +96,15 @@ public class Physics2DScene : IScene
         }
 
         // Mouse actions
-        var mousePos = MouseHelper.ScreenPosition();
+        var mousePos = MouseHelper.MousePosition;
 
         // Add particles
         if (MouseHelper.IsPressed(MouseButton.Left))
         {
-            partsim.AddParticle(mousePos);
+            if (!MouseHelper.MousePosition.Equals(MouseHelper.LastMousePosition))
+                partsim.DrawParticleLine(MouseHelper.LastMousePosition, MouseHelper.MousePosition);
+            else
+                partsim.AddParticle(mousePos);
         }
 
         // Remove particles
@@ -93,20 +113,24 @@ public class Physics2DScene : IScene
             partsim.RemoveParticleAtPosition(mousePos);
         }
 
-        // gridTexture.SetData(partsim.pixelData);
-        partsim.RefreshSimulator(gridTexture);
     }
-    
+
     public void FixedUpdate(float deltaTime)
     {
-        // partsim.RefreshSimulator(gridTexture); // refresh pixels in simulator
-        partsim.SimulateParticles(deltaTime); // update physics tick
+        if (!IsSimulationPaused)
+        {
+            partsim.SimulateParticles(deltaTime); // update physics tick
+        }
+        
+        ActiveParticleCount = partsim.particles.Where(p => !p.IsStable).ToList().Count;
     }
 
     public void Render(SpriteBatch sb)
     {
         // Draw one texture instead of thousands of pixels
+        partsim.RefreshSimulator(gridTexture);
         sb.Draw(gridTexture, Vector2.Zero, Color.White);
+        sb.DrawString(font, $"Particles: {partsim.particles.Count}\nActive: {ActiveParticleCount}\nStable: {partsim.particles.Count - ActiveParticleCount}", new Vector2(10, 30), Color.White);
     }
     public string GetName() => "Physics2DScene";
     

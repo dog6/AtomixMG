@@ -18,6 +18,8 @@ public enum MouseButton
 public static class MouseHelper
 {
 
+    public static Vec2i MousePosition { get; private set; }
+    public static Vec2i LastMousePosition;
     private static MouseState mouseState;
 
     /// <summary>
@@ -52,7 +54,6 @@ public static class MouseHelper
         return GetButtonState(state, button) == ButtonState.Released;
     }
 
-    public static Vec2i ScreenPosition() => new Vec2i(mouseState.X, mouseState.Y);
 
     /// <summary>
     /// Internal helper that maps a MouseButton to the corresponding ButtonState.
@@ -70,6 +71,8 @@ public static class MouseHelper
     public static void Update()
     {
         mouseState = Mouse.GetState();
+        MousePosition = new Vec2i(mouseState.X, mouseState.Y);
     }
+
 
 }

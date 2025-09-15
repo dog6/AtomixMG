@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 public static class SceneManager
@@ -85,14 +86,16 @@ public static class SceneManager
         }
 
     }
-    public static void LoadCurrentScene()
+    public static void LoadCurrentScene(ContentManager content)
     {
         if (currentScene == null)
         {
             Console.WriteLine("Cannot load current scene, current scene is NULL");
             return;
         }
-        currentScene.Load();
+        // font = content.Load<SpriteFont>("Font/Arial");
+
+        currentScene.Load(content);
     }
     public static void UpdateCurrentScene()
     {

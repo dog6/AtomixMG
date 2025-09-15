@@ -19,6 +19,8 @@ public class Particle : IPhysicsBody
     public ParticleType ParticleType;
     public bool IsStable;
 
+    
+
     private Random rand;
     private Space2D space; // space this body is in
 
@@ -35,20 +37,21 @@ public class Particle : IPhysicsBody
 
         this.rand = new Random();
     }
+
     public void Simulate(List<Particle> particles)
     {
-        if (IsStable) return;
-        if (this.Position.y == space.size.y-1) IsStable = true;
-
+        CellNeighbors neighbors = new CellNeighbors(this.Position, particles);
+        
         switch (ParticleType)
         {
             case ParticleType.Sand:
-                SimulateSand(particles);
+                SimulateSand(particles, neighbors);
                 break;
             case ParticleType.Water:
-                SimulateWater(particles);
+                SimulateWater(particles, neighbors);
                 break;
             case ParticleType.Stone:
+                IsStable = true;
                 break;
             default:
                 break;
@@ -129,48 +132,45 @@ public class Particle : IPhysicsBody
         return false;
     }
 
-    public void SimulateSand(List<Particle> particles)
+    public void SimulateSand(List<Particle> particles, CellNeighbors neighbors)
     {
+        if (!neighbors.HasSouth || !neighbors.HasSouthEast || !neighbors.HasSouthWest) IsStable = false;
+        if (IsStable) return;
+        if (this.Position.y == space.size.y - 1) IsStable = true;
 
-        CellNeighbors neighbors = new CellNeighbors(this.Position, particles);
 
         if (CanMove(CardinalDirection.SOUTH, neighbors)) return;
-        
         if (CanMove(CardinalDirection.SOUTHEAST, neighbors)) return;
         if (CanMove(CardinalDirection.SOUTHWEST, neighbors)) return;
-
 
         // --- Otherwise stay in place ---
         IsStable = true;
     }
 
-    public void SimulateWater(List<Particle> particles)
+    public void SimulateWater(List<Particle> particles, CellNeighbors neighbors)
     {
-        CellNeighbors neighbors = new CellNeighbors(this.Position, particles);
+            if (!neighbors.HasSouth || !neighbors.HasSouthEast || !neighbors.HasSouthWest || !neighbors.HasEast || !neighbors.HasWest) IsStable = false;
+            if (CanMove(CardinalDirection.SOUTH, neighbors)) return;
 
-        if (CanMove(CardinalDirection.SOUTH, neighbors)) return;
+            bool leftFlow = rand.Next(2) == 0;
 
-        bool leftFlow = rand.Next(2) == 0;
-
-        if (leftFlow)
-        {
-            if (CanMove(CardinalDirection.SOUTHWEST, neighbors)) return;
-            if (CanMove(CardinalDirection.WEST, neighbors)) return;
-            if (CanMove(CardinalDirection.SOUTHEAST, neighbors)) return;
-            if (CanMove(CardinalDirection.EAST, neighbors)) return;
-        }
-        else
-        {
-            if (CanMove(CardinalDirection.SOUTHEAST, neighbors)) return;
-            if (CanMove(CardinalDirection.EAST, neighbors)) return;
-            if (CanMove(CardinalDirection.SOUTHWEST, neighbors)) return;
-            if (CanMove(CardinalDirection.WEST, neighbors)) return;
-        }
-        // Otherwise stay in place
-        IsStable = true;
+            if (leftFlow)
+            {
+                if (CanMove(CardinalDirection.SOUTHWEST, neighbors)) return;
+                if (CanMove(CardinalDirection.WEST, neighbors)) return;
+                if (CanMove(CardinalDirection.SOUTHEAST, neighbors)) return;
+                if (CanMove(CardinalDirection.EAST, neighbors)) return;
+            }
+            else
+            {
+                if (CanMove(CardinalDirection.SOUTHEAST, neighbors)) return;
+                if (CanMove(CardinalDirection.EAST, neighbors)) return;
+                if (CanMove(CardinalDirection.SOUTHWEST, neighbors)) return;
+                if (CanMove(CardinalDirection.WEST, neighbors)) return;
+            }
+            // Otherwise stay in place
+            IsStable = true;
     }
-
-    public void SimulateStone() => IsStable = true;
 
     private void HandleBorderCollisions()
     {

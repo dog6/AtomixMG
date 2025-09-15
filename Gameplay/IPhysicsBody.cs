@@ -3,5 +3,5 @@
 using System.Collections.Generic;
 public interface IPhysicsBody
 {
-    public void SimulateSand(List<Particle> particles);
+    public void SimulateSand(List<Particle> particles, CellNeighbors neighbors);
 }

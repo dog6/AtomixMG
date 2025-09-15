@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -43,7 +44,7 @@ public class DemoScene : IScene
 
     }
 
-    public void Load()
+    public void Load(ContentManager content)
     {
         // Load pixel texture
         pixelTexture = new Texture2D(graphicsDevice, 1, 1);
@@ -77,7 +78,7 @@ public class DemoScene : IScene
         if (KeyboardHelper.JustPressed(Keys.Space)) gamePaused = !gamePaused;
 
         // Mouse actions
-        var mousePos = MouseHelper.ScreenPosition();
+        var mousePos = MouseHelper.MousePosition;
 
         // Listen for populating cells
         if (MouseHelper.IsPressed(MouseButton.Left))
